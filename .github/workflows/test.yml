@@ -5,6 +5,8 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - feature/*  # Adjust as necessary
 
 jobs:
   test:
@@ -46,9 +48,10 @@ jobs:
           git fetch origin ${{ github.head_ref }}
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git checkout doc/cov-badge
           git add README.md
-          git commit -m "chore: Updated coverage badge."
-
+          git commit -m "Update coverage badge"
+          git push origin doc/cov-badge
       - name: Push changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: ad-m/github-push-action@master
