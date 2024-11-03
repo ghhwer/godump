@@ -1,4 +1,4 @@
-name: Go Test and Coverage
+name: Go Test and Local Coverage Badge
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.23.0'  # specify the Go version you need
+          go-version: '1.19'  # specify the Go version you need
 
       - name: Install dependencies
         run: go mod download
@@ -25,23 +25,19 @@ jobs:
       - name: Run tests with coverage
         run: go test -coverprofile=coverage.out ./...
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: coverage.out
-          flags: unittests
-          name: codecov-report
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}  # set this in your GitHub secrets
-
-      - name: Generate Coverage Badge
+      - name: Generate Coverage Report
         run: |
-          curl -s https://codecov.io/gh/<username>/<repo>/branch/main/graph/badge.svg > badge.svg
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+          echo "Coverage report generated"
+
+      - name: Create Coverage Badge
+        run: |
+          go install github.com/matm/gocovsh@latest
+          gocovsh badge -coverprofile=coverage.out -o coverage_badge.svg
 
       - name: Upload Badge
         uses: actions/upload-artifact@v3
         with:
-          name: codecov-badge
-          path: badge.svg
+          name: coverage-badge
+          path: coverage_badge.svg
