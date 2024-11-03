@@ -11,7 +11,7 @@
 - [Testing and Contributing](#testing-and-contributing)
 
 ### Overview
-`godump` is a Go library designed to help with testing, debugging, and profiling of Go programs by capturing heap and goroutine dumping scenarios. With `godump`, you can activate controlled heap and goroutine dumps based on customizable triggers, allowing you to capture useful profiling data without manual intervention. This is particularly useful in production environments, where enabling `godump` dynamically can provide insights without restarting the application.
+`godump` is a Go library that aids in testing, debugging, and profiling Go programs by capturing heap and goroutine dumps. With `godump`, you can trigger controlled dumps based on customizable conditions, allowing you to gather valuable profiling data automatically. This is especially beneficial in production environments, where you can enable `godump` dynamically to gain insights without needing to restart your application.
 
 ### Usage
 To use `godump`, configure either a `DumpHeapConfigs` or `DumpGoroutineConfigs` structure with desired options, then initialize the service using the `NewGoDumpService` function. The service will continue running until the program ends, signaled via a channel.
