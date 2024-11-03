@@ -1,5 +1,4 @@
 # README
-![codecov](https://codecov.io/gh/<username>/<repo>/branch/main/graph/badge.svg)
 
 ### Table of Contents
 - [Overview](#overview)
