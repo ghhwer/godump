@@ -22,39 +22,33 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
-      - name: Run tests with coverage
-        run: go test -coverprofile=coverage.out ./...
-
-      - name: Generate Coverage Report
+      - name: Run Test
         run: |
-          go tool cover -func=coverage.out -o coverage.txt
-          go tool cover -html=coverage.out -o coverage.html
-          echo "Coverage report generated"
+          go test -v ./... -covermode=count -coverprofile=coverage.out
+          go tool cover -func=coverage.out -o=coverage.out
 
-      - name: Create Coverage Badge
-        run: |
-          go install github.com/matm/gocovsh@latest
-          gocovsh badge -coverprofile=coverage.out -o coverage_badge.svg
-
-      - name: Upload Badge
-        uses: actions/upload-artifact@v3
+      - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
+        uses: tj-actions/coverage-badge-go@v2
         with:
-          name: coverage-badge
-          path: coverage_badge.svg
+          filename: coverage.out
 
-      - name: Publish to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Verify Changed files
+        uses: tj-actions/verify-changed-files@v16
+        id: verify-changed-files
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # Change if you want to publish from a specific directory
-          publish_branch: gh-pages  # This is the branch where GitHub Pages serves content
-          destination_dir: .  # Publish to the root of the `gh-pages` branch
-          force_orphan: true  # Create an orphan branch if needed
-          
-      - name: Commit and Push Coverage Badge
+          files: README.md
+
+      - name: Commit changes
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add coverage_badge.svg
-          git commit -m 'Update coverage badge'
-          git push -f origin gh-pages
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git commit -m "chore: Updated coverage badge."
+
+      - name: Push changes
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ github.token }}
+          branch: ${{ github.head_ref }}
