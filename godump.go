@@ -187,9 +187,6 @@ func WatchHeapPercentage(gd GoDumpService, ApplicationStopChannel chan bool, Saf
 			runtime.ReadMemStats(&CurrentMemStats)
 			// Check the heap allocation
 			if CurrentMemStats.Alloc > uint64(float64(AvailableSystemMemory)*float64(gd.configs.HeapDumpConfigs.HeapThresholdPercentage)) {
-				println("Taking heap dump")
-				println("CurrentMemStats.Alloc: ", CurrentMemStats.Alloc)
-				println("AvailableSystemMemory: ", AvailableSystemMemory)
 				// take a heap dump
 				TakeHeapDump(gd.configs)
 			}
