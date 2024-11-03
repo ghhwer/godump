@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - feature/*  # Adjust as necessary
+      - develop
 
 jobs:
   test:
