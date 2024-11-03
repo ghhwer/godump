@@ -1,0 +1,47 @@
+name: Go Test and Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'  # specify the Go version you need
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests with coverage
+        run: go test -coverprofile=coverage.out ./...
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage.out
+          flags: unittests
+          name: codecov-report
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}  # set this in your GitHub secrets
+
+      - name: Generate Coverage Badge
+        run: |
+          curl -s https://codecov.io/gh/<username>/<repo>/branch/main/graph/badge.svg > badge.svg
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload Badge
+        uses: actions/upload-artifact@v3
+        with:
+          name: codecov-badge
+          path: badge.svg
