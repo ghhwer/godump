@@ -1,4 +1,5 @@
 # README
+![Coverage](https://img.shields.io/badge/Coverage-94.1%25-brightgreen)
 
 ### Table of Contents
 - [Overview](#overview)
@@ -136,7 +137,8 @@ Goroutine dump files are readable directly using a text editor or command-line t
 For an example please check the [example_output](example_output) directory. Where you can find an output of the program that was captured during the execution of the test.
 
 ### Motivation
-The primary motivation behind `godump` is to provide an easy-to-activate profiling tool, especially valuable for production scenarios. For example, if your application suffers from memory leaks, you can enable `godump` dynamically by setting flags, which enables dump collection without the need for a restart. This collected data can be analyzed to locate potential performance bottlenecks or memory issues.
+The primary motivation behind `godump` is to provide an easy-to-activate profiling tool, especially valuable for production scenarios. For example, if your application suffers from memory leaks, you can enable `godump` dynamically by setting flags, which enables dump collection without the need for a redeploy (If you already have control over flags). 
+This collected data can be analyzed to locate potential performance bottlenecks or memory issues.
 
 Additionally, `godump` is designed to avoid resource consumption when not in use. When both `GoDumpHeap` and `GoDumpGoroutine` are disabled, `godump` remains completely inactive, ensuring no impact on application performance.
 
