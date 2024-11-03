@@ -41,20 +41,33 @@ jobs:
         id: verify-changed-files
         with:
           files: README.md
-
+      
       - name: Commit changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
-          git fetch origin ${{ github.head_ref }}
+          # Determine the branch name based on the context
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"  # Extract branch name if in a push context
+          
+          # Check if running in a pull request context
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            BRANCH_NAME="${GITHUB_HEAD_REF}"  # Use the head ref from the pull request
+          fi
+
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git checkout doc/cov-badge
+
+          # Ensure we have the latest changes before attempting to push
+          git fetch origin $BRANCH_NAME
+          git pull origin $BRANCH_NAME --rebase
+          
           git add README.md
           git commit -m "Update coverage badge"
-          git push origin doc/cov-badge
+          git push origin $BRANCH_NAME
+
       - name: Push changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ github.token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
