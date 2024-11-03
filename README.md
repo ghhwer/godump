@@ -38,13 +38,15 @@ import (
 	"log"
 	"sync"
 
-	godump "github.com/ghhwer/godump" // Replace with the actual package name
+	godump "github.com/ghhwer/godump"
 )
 
 func main() {
 	// Set up the heap dump configuration
-	hdc := &godump.DumpHeapConfigs{
-		HeapThresholdBytes: 1024 * 1024 * 25, // Trigger heap dump if heap exceeds 25 MB
+	dumpHeapConfigs := &godump.DumpHeapConfigs{
+		HeapThresholdBytes:          1024 * 1024 * 50, // Trigger a dump if heap exceeds 50 MB
+		HeapThresholdPercentage: 0,                // Setting this to 0 will disable percentage-based heap dump triggering (you can also not set this field)
+		HeapDumpPrefix:              nil,              // Setting this to nil will use the default prefix (by default, the prefix is "heapdump")
 	}
 
 	// Initialize the GoDump service
@@ -52,6 +54,7 @@ func main() {
 		godump.GoDumpConfigs{
 			GoDumpHeap: true,      // Enable heap dumping
 			GoDumpPath: "./_test", // Set the path to store the dumps
+			HeapDumpConfigs: dumpHeapConfigs,
 		})
 	if err != nil {
 		log.Fatal(err)
@@ -83,13 +86,15 @@ import (
 	"log"
 	"sync"
 
-	godump "github.com/ghhwer/godump" // Replace with the actual package name
+	godump "github.com/ghhwer/godump"
 )
 
 func main() {
 	// Set up the goroutine dump configuration
-	gdc := &godump.DumpGoroutineConfigs{
-		GoroutineThreshold: 15, // Trigger goroutine dump if goroutines exceed this count
+	dumpHeapConfigs := &godump.DumpGoroutineConfigs{
+		GoroutineThreshold:     100,       // Trigger a dump if there are more than 100 goroutines
+		GoroutineHangingTimeMs: 90 * 1000, // Trigger a dump if there are goroutines that have been running for more than 90 seconds
+		GoroutineDumpPrefix:    nil,       // Setting this to nil will use the default prefix (by default, the prefix is "goroutinedump")
 	}
 
 	// Initialize the GoDump service
@@ -97,6 +102,7 @@ func main() {
 		godump.GoDumpConfigs{
 			GoDumpGoroutine: true, // Enable goroutine dumping
 			GoDumpPath:      "./_test", // Set the path to store the dumps
+			GoroutineDumpConfigs: dumpHeapConfigs,
 		})
 	if err != nil {
 		log.Fatal(err)
@@ -137,7 +143,8 @@ Goroutine dump files are readable directly using a text editor or command-line t
 For an example please check the [example_output](example_output) directory. Where you can find an output of the program that was captured during the execution of the test.
 
 ### Motivation
-The primary motivation behind `godump` is to provide an easy-to-activate profiling tool, especially valuable for production scenarios. For example, if your application suffers from memory leaks, you can enable `godump` dynamically by setting flags, which enables dump collection without the need for a restart. This collected data can be analyzed to locate potential performance bottlenecks or memory issues.
+The primary motivation behind `godump` is to provide an easy-to-activate profiling tool, especially valuable for production scenarios. For example, if your application suffers from memory leaks, you can enable `godump` dynamically by setting flags, which enables dump collection without the need for a redeploy (If you already have control over flags). 
+This collected data can be analyzed to locate potential performance bottlenecks or memory issues.
 
 Additionally, `godump` is designed to avoid resource consumption when not in use. When both `GoDumpHeap` and `GoDumpGoroutine` are disabled, `godump` remains completely inactive, ensuring no impact on application performance.
 
