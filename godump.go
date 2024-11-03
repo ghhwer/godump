@@ -27,8 +27,8 @@ type DumpHeapConfigs struct {
 }
 
 type DumpGoroutineConfigs struct {
-	GoroutineThreshold     int
-	GoroutineHangingTimeMs int
+	GoroutineThreshold     uint64
+	GoroutineHangingTimeMs uint64
 	GoroutineDumpPrefix    *string
 }
 
@@ -38,7 +38,7 @@ type GoDumpConfigs struct {
 	GoDumpPath           string
 	HeapDumpConfigs      *DumpHeapConfigs
 	GoroutineDumpConfigs *DumpGoroutineConfigs
-	WatchdogIntervalMs   int
+	WatchdogIntervalMs   uint64
 }
 
 func TakeHeapDump(goDumpConfigs *GoDumpConfigs) {
@@ -208,7 +208,7 @@ func WatchGoroutines(gd GoDumpService, ApplicationStopChannel chan bool, SafeExi
 		case <-time.After(time.Duration(gd.configs.WatchdogIntervalMs) * time.Millisecond):
 			// check the number of goroutines
 			// if the number of goroutines exceeds the threshold, take a goroutine dump
-			if runtime.NumGoroutine() > gd.configs.GoroutineDumpConfigs.GoroutineThreshold {
+			if uint64(runtime.NumGoroutine()) > gd.configs.GoroutineDumpConfigs.GoroutineThreshold {
 				// take a goroutine dump
 				TakeGoroutineDump(gd.configs, []GoStackAnalyzerRecord{})
 			}
@@ -325,8 +325,8 @@ func NewGoDumpService(configs *GoDumpConfigs) (*GoDumpService, error) {
 	if configs.GoDumpHeap {
 		if configs.HeapDumpConfigs.HeapThresholdBytes == 0 && configs.HeapDumpConfigs.HeapThresholdPercentage == 0 {
 			return nil, fmt.Errorf("the variable 'HeapThresholdBytes' and 'HeapThresholdPercentage' cannot be both 0")
-		} else if configs.HeapDumpConfigs.HeapThresholdPercentage > 1 {
-			return nil, fmt.Errorf("the variable 'HeapThresholdPercentage' cannot be greater than 1")
+		} else if configs.HeapDumpConfigs.HeapThresholdPercentage > 1 || configs.HeapDumpConfigs.HeapThresholdPercentage < 0 {
+			return nil, fmt.Errorf("the variable 'HeapThresholdPercentage' cannot be greater than 1 or less than 0")
 		}
 	}
 	if configs.GoDumpGoroutine {

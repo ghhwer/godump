@@ -61,7 +61,7 @@ func HeapDumpFillupMemoryTest(goHeapDumpConfigs *DumpHeapConfigs, TestWatchDogIn
 		GoDumpHeap:         true,
 		GoDumpGoroutine:    false,
 		GoDumpPath:         "./_test",
-		WatchdogIntervalMs: 1000 * TestWatchDogIntervalSeconds, // 1s
+		WatchdogIntervalMs: uint64(1000 * TestWatchDogIntervalSeconds), // 1s
 		HeapDumpConfigs:    goHeapDumpConfigs,
 	}
 	gds, err := NewGoDumpService(goDumpConfs)
@@ -203,7 +203,7 @@ func GoroutinesTests(goroutineDumpConfigs *DumpGoroutineConfigs, TestWatchDogInt
 		GoDumpHeap:           false,
 		GoDumpGoroutine:      true,
 		GoDumpPath:           "./_test",
-		WatchdogIntervalMs:   1000 * TestWatchDogIntervalSeconds, // 1s
+		WatchdogIntervalMs:   uint64(1000 * TestWatchDogIntervalSeconds), // 1s
 		GoroutineDumpConfigs: goroutineDumpConfigs,
 	}
 	gds, err := NewGoDumpService(goDumpConfs)
@@ -301,3 +301,5 @@ func TestGoroutineHangingTriggerFile(t *testing.T) {
 		println("Goroutine file created [OK]")
 	}
 }
+
+// --- Bad input tests
