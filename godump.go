@@ -325,7 +325,7 @@ func NewGoDumpService(configs *GoDumpConfigs) (*GoDumpService, error) {
 	if configs.GoDumpHeap {
 		if configs.HeapDumpConfigs.HeapThresholdBytes == 0 && configs.HeapDumpConfigs.HeapThresholdPercentage == 0 {
 			return nil, fmt.Errorf("the variable 'HeapThresholdBytes' and 'HeapThresholdPercentage' cannot be both 0")
-		} else if configs.HeapDumpConfigs.HeapThresholdPercentage > 1 || configs.HeapDumpConfigs.HeapThresholdPercentage <= 0 {
+		} else if configs.HeapDumpConfigs.HeapThresholdPercentage > 1 || configs.HeapDumpConfigs.HeapThresholdPercentage < 0 {
 			return nil, fmt.Errorf("the variable 'HeapThresholdPercentage' cannot be greater than 1 or less than 0")
 		}
 	}
